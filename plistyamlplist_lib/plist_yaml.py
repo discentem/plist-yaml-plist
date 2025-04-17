@@ -110,6 +110,20 @@ def plist_yaml(in_path, out_path):
     out_file.writelines(output)
     print("Wrote to : {}\n".format(out_path))
 
+def yaml_recipe_from_dict(input_data: dict):
+    """Convert recipe in dict format to yaml""" 
+    normalized = normalize_types(input_data)
+
+    # handle conversion of AutoPkg recipes
+    if sys.version_info.major == 3 and input_data.get("name", "").endswith((".recipe", ".recipe.plist")):
+        normalized = handle_autopkg_recipes.optimise_autopkg_recipes(normalized)
+        output = convert(normalized)
+        output = handle_autopkg_recipes.format_autopkg_recipes(output)
+    else:
+        output = convert(normalized)
+
+    return output
+
 
 def main():
     """Get the command line inputs if running this script directly."""
